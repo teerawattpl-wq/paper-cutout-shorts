@@ -1,0 +1,200 @@
+<!doctype html>
+<!--
+  SCENE TEMPLATE for one episode. Copy to <episode>/video/index.html and edit.
+  A single continuous scene: one GSAP timeline, paused, registered for the renderer.
+  Every time used below comes from timings.js (window.T), which the audio mix reads too.
+
+  Replace: the image names and sizes, the positions, the tag texts, the title clusters,
+  the data-duration values (three places), and the timeline section at the bottom.
+  Keep: the structure of a character (.pt > .sway > .mirror > .poses > img.pose),
+  the helpers, the seeded random generator, and the last three lines of the script.
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="timings.js"></script>
+    <style>
+      /* Local fonts that contain the project's script. Add one @font-face per file in fonts/. */
+      @font-face { font-family: "Tag"; src: url("fonts/tag-700.woff2") format("woff2"); font-weight: 700; }
+      @font-face { font-family: "TileA"; src: url("fonts/tile-a.woff2") format("woff2"); }
+      @font-face { font-family: "TileB"; src: url("fonts/tile-b.woff2") format("woff2"); }
+
+      :root {
+        --tomato: #d9483b; --mustard: #e0a73a; --teal: #2f7f7a; --ultra: #2f4fa8;
+        --blush: #f1a9a0; --cream: #f3ecdf; --paper: #fbf7ee; --ink: #2b2622; --pencil: #3a332c;
+        --cut-shadow: drop-shadow(0 9px 7px rgba(74, 48, 22, 0.3)) drop-shadow(0 2px 1.5px rgba(0, 0, 0, 0.2));
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--cream); }
+      #root, #stage, #cam, #world { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+      #root { overflow: hidden; font-family: "Tag", sans-serif; font-weight: 700; color: var(--ink); }
+      #world { transform-origin: 50% 72%; }
+      #bg { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+      .cut { position: absolute; filter: var(--cut-shadow); }
+      /* A character is a zero-size anchor point; everything inside hangs off that point. */
+      .pt { position: absolute; width: 0; height: 0; }
+      .pt > div, .pt > div > div, .pt > div > div > div { position: absolute; left: 0; top: 0; width: 0; height: 0; }
+      .mirror { transform: scaleX(-1); }
+      .pose { position: absolute; opacity: 0; filter: var(--cut-shadow); }
+      .mark { position: absolute; font-size: 130px; line-height: 1; color: var(--tomato); -webkit-text-stroke: 5px var(--paper); paint-order: stroke fill; }
+      .tag { position: absolute; background: var(--cream); padding: 16px 30px 14px; font-size: 52px; line-height: 1.25; white-space: nowrap; box-shadow: 0 8px 10px rgba(74, 48, 22, 0.28), 0 2px 2px rgba(0, 0, 0, 0.18); }
+      .tag::before { content: ""; position: absolute; left: 50%; top: -22px; width: 130px; height: 40px; margin-left: -65px; background: rgba(224, 167, 58, 0.78); transform: rotate(-3deg); }
+      .tag small { font-size: 40px; color: var(--tomato); margin-left: 14px; }
+      #title { position: absolute; left: 86px; top: 470px; width: 680px; display: flex; flex-direction: column; gap: 14px; }
+      #title .row { display: flex; gap: 8px; align-items: flex-end; }
+      .tile { width: 122px; height: 150px; display: flex; align-items: center; justify-content: center; font-size: 84px; line-height: 1; padding-top: 14px; box-shadow: 0 7px 8px rgba(74, 48, 22, 0.32), 0 2px 2px rgba(0, 0, 0, 0.2); }
+      #vignette { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; background: radial-gradient(ellipse at 50% 46%, rgba(74, 48, 22, 0) 58%, rgba(74, 48, 22, 0.26) 100%); pointer-events: none; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="30" data-width="1080" data-height="1920">
+      <div id="stage" class="clip" data-start="0" data-duration="30" data-track-index="0">
+        <div id="cam">
+          <div id="world">
+            <img id="bg" src="assets/bg-sky.jpg" alt="" />
+            <img id="tree" class="cut" src="assets/tree.png" alt="" style="left: 758px; top: 200px; width: 345px; height: 1450px; z-index: 2" />
+
+            <!-- A character that faces LEFT in its images and must face right: keep .mirror.
+                 Image boxes: width/height = display size; left = -width/2; top = -height. -->
+            <div id="camel" class="pt" style="left: 190px; top: 1650px; z-index: 8">
+              <div class="sway"><div class="mirror"><div class="poses">
+                <img class="pose idle" src="assets/camel-ref.png" alt="" style="width: 352px; height: 420px; left: -176px; top: -420px" />
+                <img class="pose lookup" src="assets/camel-lookup.png" alt="" style="width: 354px; height: 430px; left: -177px; top: -430px" />
+              </div></div></div>
+            </div>
+
+            <!-- A character that needs no mirroring: leave the middle div without a class. -->
+            <div id="bear" class="pt" style="left: 700px; top: 1650px; z-index: 9">
+              <div class="sway"><div><div class="poses">
+                <img class="pose idle" src="assets/bear-ref.png" alt="" style="width: 318px; height: 440px; left: -159px; top: -440px" />
+                <img class="pose fly" src="assets/bear-fly.png" alt="" style="width: 353px; height: 400px; left: -176px; top: -400px" />
+              </div></div></div>
+            </div>
+
+            <img id="grass" class="cut" src="assets/grass.png" alt="" style="left: -60px; top: 1690px; width: 1200px; height: 252px; z-index: 12" />
+
+            <div id="idea" class="mark" style="left: 792px; top: 1068px; z-index: 15">!</div>
+            <div id="sign" class="tag" style="left: 236px; top: 790px; z-index: 13">Machine name<small>Mk 1</small></div>
+
+            <div id="title" style="z-index: 20"><div class="row" id="row1"></div><div class="row" id="row2"></div></div>
+            <div id="tested" class="tag" style="left: 470px; top: 876px; z-index: 20; font-size: 46px">Tested</div>
+          </div>
+        </div>
+        <div id="vignette" style="z-index: 30"></div>
+      </div>
+      <audio id="mix" class="clip" data-start="0" data-duration="30" data-track-index="1" src="audio/mix-final.wav" data-volume="1"></audio>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const T = window.T;
+      const tl = gsap.timeline({ paused: true });
+
+      // Seeded randomness only, so every render is identical. Never Math.random().
+      function mulberry32(a) {
+        return function () {
+          a |= 0; a = (a + 0x6d2b79f5) | 0;
+          let t = Math.imul(a ^ (a >>> 15), 1 | a);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+      const rnd = mulberry32(12345);
+
+      // ---------- title tiles: [background, letter color, font] cycled over the letters ----------
+      const TILE_STYLES = [
+        ["#2b2622", "#e0a73a", "TileA"], ["#f3ecdf", "#d9483b", "TileB"], ["#d9483b", "#f3ecdf", "TileA"],
+        ["#2f4fa8", "#e0a73a", "TileB"], ["#e0a73a", "#2b2622", "TileA"], ["#f1a9a0", "#2f4fa8", "TileB"],
+        ["#2f7f7a", "#f3ecdf", "TileA"],
+      ];
+      // For scripts with combining marks, list letter CLUSTERS by hand, e.g. ["เ","ค","รื่","อ","ง"].
+      let tileNo = 0;
+      [["row1", ["T", "I", "T", "L", "E"]], ["row2", ["H", "E", "R", "E"]]].forEach(([rowId, letters]) => {
+        letters.forEach((ch) => {
+          const [bg, fg, font] = TILE_STYLES[tileNo++ % TILE_STYLES.length];
+          const d = document.createElement("div");
+          d.className = "tile"; d.textContent = ch;
+          d.style.background = bg; d.style.color = fg;
+          d.style.fontFamily = '"' + font + '", "Tag", sans-serif';
+          d.dataset.rot = (rnd() * 12 - 6).toFixed(2);
+          d.dataset.dy = (rnd() * 16 - 8).toFixed(1);
+          document.getElementById(rowId).appendChild(d);
+        });
+      });
+
+      // ---------- initial states ----------
+      gsap.set("#bear .idle, #camel .idle", { opacity: 1 });
+      gsap.set(".tile", { rotation: (i, el) => +el.dataset.rot, y: (i, el) => +el.dataset.dy });
+      // Everything that is not on screen at t=0 starts hidden here.
+      gsap.set("#idea, #sign, #tested, .tile", { opacity: 0 });
+
+      // ---------- helpers ----------
+      function show(who, pose, t) {            // instant pose change
+        tl.set("#" + who + " .pose", { opacity: 0 }, t);
+        tl.set("#" + who + " ." + pose, { opacity: 1 }, t);
+      }
+      function flip(who, pose, t) {            // paper-flip pose change
+        tl.to("#" + who + " .poses", { scaleX: 0, duration: 0.07, ease: "power2.in" }, t);
+        show(who, pose, t + 0.07);
+        tl.to("#" + who + " .poses", { scaleX: 1, duration: 0.14, ease: "back.out(3)" }, t + 0.07);
+      }
+      // immediateRender:false matters: without it a fromTo paints its start values at t=0
+      // and an element meant to stay hidden shows up from the first frame.
+      function popIn(sel, t, vars) {
+        tl.fromTo(sel, Object.assign({ scale: 0, rotation: -12, opacity: 1 }, (vars && vars.from) || {}),
+          Object.assign({ scale: 1, rotation: 0, opacity: 1, duration: 0.42, ease: "back.out(2.6)", immediateRender: false }, (vars && vars.to) || {}), t);
+      }
+      function shake(t, amp, n) {              // stepped, stop-motion style
+        for (let i = 0; i < n; i++) {
+          const k = 1 - i / n;
+          tl.set("#cam", { x: (rnd() * 2 - 1) * amp * k, y: (rnd() * 2 - 1) * amp * k }, t + i * 0.045);
+        }
+        tl.set("#cam", { x: 0, y: 0 }, t + n * 0.045);
+      }
+      function sway(sel, t, until, deg, dur) { // finite idle sway; never repeat: -1
+        const reps = Math.max(1, Math.floor((until - t) / dur));
+        tl.fromTo(sel, { rotation: -deg }, { rotation: deg, duration: dur, ease: "sine.inOut", yoyo: true, repeat: reps % 2 ? reps : reps - 1, immediateRender: false }, t);
+      }
+      function hop(sel, t, dx, h) {
+        tl.to(sel, { x: "+=" + dx, duration: 0.32, ease: "sine.inOut" }, t);
+        tl.to(sel, { y: -h, duration: 0.16, ease: "power2.out" }, t);
+        tl.to(sel, { y: 0, duration: 0.16, ease: "power2.in" }, t + 0.16);
+      }
+      function fallAway(sel, t) {              // a tag drops out of frame, then is hidden for good
+        tl.to(sel, { y: 1500, rotation: 55, duration: 0.9, ease: "power2.in" }, t);
+        tl.set(sel, { opacity: 0 }, t + 1.0);
+      }
+
+      // ---------- timeline: replace everything from here to the end card ----------
+      tl.fromTo("#world", { scale: 1 }, { scale: 1.035, duration: T.twist - 0.2, ease: "sine.inOut" }, 0.2);
+      tl.to("#world", { scale: 1, duration: 0.25, ease: "power3.out" }, T.twist);
+
+      tl.from("#grass", { y: 320, duration: 0.6, ease: "back.out(1.4)" }, 0.15);
+      tl.from("#tree", { scaleY: 0, transformOrigin: "50% 100%", duration: 0.7, ease: "back.out(1.6)" }, 0.3);
+      popIn("#camel .sway", 0.9);
+      popIn("#bear .sway", 1.2);
+      sway("#camel .sway", 1.6, T.twist, 1.6, 1.5);
+      sway("#bear .sway", 1.8, T.twist - 0.5, 2.2, 1.2);
+
+      popIn("#idea", T.l1 + 0.5);
+      tl.to("#idea", { scale: 0, opacity: 0, duration: 0.2, ease: "back.in(2)" }, T.l1 + 1.7);
+      popIn("#sign", T.l2, { from: { rotation: -22 }, to: { rotation: -4 } });
+
+      // the twist
+      show("bear", "fly", T.twist);
+      tl.to("#bear", { y: -2100, rotation: -38, duration: 1.0, ease: "power1.out" }, T.twist);
+      shake(T.twist, 22, 8);
+      fallAway("#sign", T.twist + 0.05);
+      flip("camel", "lookup", T.twist + 1.5);
+
+      // ---------- end card ----------
+      tl.fromTo(".tile", { scale: 1.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.14, ease: "back.out(2.5)", stagger: 0.07 }, T.title);
+      popIn("#tested", T.title + 1.5, { from: { rotation: 24 }, to: { rotation: 6 } });
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
