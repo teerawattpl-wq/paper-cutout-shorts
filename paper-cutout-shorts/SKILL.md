@@ -118,6 +118,17 @@ them.
 Ask for as few images as the story allows. Do in code everything code can do (see the list
 at the end of that reference).
 
+A character is one picture per pose, and that covers most stories. When a shot needs an
+action a pose swap cannot do (an arm that keeps waving, a paw that follows something, a
+mouth that moves with speech), read `references/moving-parts.md` before writing the
+prompts: it says which actions need a separate piece, how many pictures that adds, and
+which methods have not been tried in this style.
+
+When an episode needs more than about four new poses, read `references/pose-sheets.md`:
+three poses on one picture, open mouths made by editing the closed sheet so they match, and
+how to cut the sheet. Before writing the motion, read `references/animation-rules.md`: how a
+whole-picture sticker sinks, arrives, hops and takes fright, with the numbers that passed.
+
 ### 4. Check and prepare the images
 
 When the user says the images are in:
@@ -241,3 +252,9 @@ Keep earlier versions when you revise: write `-v2`, do not overwrite `-v1`.
 - `references/style-guide.md` - look, colors, type, layout, motion, sound, story shape.
 - `references/image-prompts.md` - prompt templates and fix phrases for the user's image tool.
 - `references/scene-template.html` - the scene skeleton with character structure and helpers.
+- `references/moving-parts.md` - pieces on pivots, swap sets and warping: when one picture
+  per pose is not enough, what each costs, and how far each has been tried.
+- `references/pose-sheets.md` - several poses in one picture, mouths that match, cutting a
+  sheet, props made of separate pieces.
+- `references/animation-rules.md` - the eight classic rules of animation, the numbers that
+  worked here, and how far each has been tested.

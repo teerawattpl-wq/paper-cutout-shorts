@@ -44,6 +44,7 @@ common agent-skill layout: a `SKILL.md` with a name and description, plus `scrip
 | `references/style-guide.md` | Look, colors, type, layout, motion, sound, story shape |
 | `references/image-prompts.md` | Prompt templates and fix phrases for the image generator |
 | `references/scene-template.html` | Scene skeleton with character structure and helpers |
+| `references/moving-parts.md` | Pieces on pivots, swap sets and warping, for actions a pose swap cannot do |
 | `scripts/make_voice.py` | Whole-script, two-voice TTS in one request |
 | `scripts/split_lines.py` | Find speech segments and cut them into one file per line |
 | `scripts/prep_assets.py` | Transparency and cropping checks, trimming, contact sheet |

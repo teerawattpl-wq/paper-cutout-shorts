@@ -82,6 +82,9 @@ Rules that save rework:
   asking for the second and say `Same pose and same <anchor> as the attached image`.
 - Small motion (sway, hop, squash, shiver, flip) is done in code from one image. Ask for a
   new image only when the body shape or the expression really changes.
+- A limb that has to move on its own (a wave, a point, a crank being turned) needs its own
+  picture and a body without that limb. The prompts are in `moving-parts.md`; count the
+  extra pictures before promising the shot.
 
 ## 4. Props
 

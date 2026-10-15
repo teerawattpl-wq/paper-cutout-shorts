@@ -103,6 +103,10 @@ Principles:
 
 - Nothing on screen is ever completely still; give everything a small idle sway or bob.
 - Anticipation, action, follow-through. Squash before a jump, overshoot after a landing.
+- Parts of a figure do not start and stop together: let the body arrive, then the head
+  settle, then an ear, two to four frames apart.
+- Snappy does not mean constant speed. A snap is a short eased move with an overshoot.
+  For actions that need a limb to move on its own, see `moving-parts.md`.
 - One sentence, one visual beat. Each reveal lands on, or just before, the word it shows.
 - Do not put everything on screen at once; reveal across the scene.
 - Deterministic rendering needs seeded randomness, finite repeat counts, and a timeline
