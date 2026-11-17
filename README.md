@@ -45,6 +45,8 @@ common agent-skill layout: a `SKILL.md` with a name and description, plus `scrip
 | `references/image-prompts.md` | Prompt templates and fix phrases for the image generator |
 | `references/scene-template.html` | Scene skeleton with character structure and helpers |
 | `references/moving-parts.md` | Pieces on pivots, swap sets and warping, for actions a pose swap cannot do |
+| `references/pose-sheets.md` | Several poses of a character in one picture, and how to cut them apart |
+| `references/animation-rules.md` | The eight classic rules of animation, with the numbers that worked |
 | `scripts/make_voice.py` | Whole-script, two-voice TTS in one request |
 | `scripts/split_lines.py` | Find speech segments and cut them into one file per line |
 | `scripts/prep_assets.py` | Transparency and cropping checks, trimming, contact sheet |
@@ -55,3 +57,7 @@ common agent-skill layout: a `SKILL.md` with a name and description, plus `scrip
 
 - Never commit your `.env` file or API key.
 - Use your own characters and write your own stories.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
